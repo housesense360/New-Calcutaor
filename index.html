@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan & Credit Score Calculator</title>
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            --primary-color: #3498db;
+            --primary-dark: #2980b9;
+            --secondary-color: #2ecc71;
+            --secondary-dark: #27ae60;
+            --warning-color: #e74c3c;
+            --warning-dark: #c0392b;
+            --neutral-light: #f8f9fa;
+            --neutral-mid: #e9ecef;
+            --neutral-dark: #343a40;
+            --text-color: #212529;
+            --text-light: #6c757d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        /* Dark mode variables */
+        [data-theme="dark"] {
+            --neutral-light: #121212;
+            --neutral-mid: #1e1e1e;
+            --neutral-dark: #2d2d2d;
+            --text-color: #f8f9fa;
+            --text-light: #adb5bd;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--neutral-light);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 1rem;
+            transition: var(--transition);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        /* Card component */
+        .card {
+            background-color: var(--neutral-mid);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        /* Tab navigation */
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--neutral-dark);
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            color: var(--primary-color);
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        input, select, button {
+            font-family: inherit;
+            font-size: inherit;
+        }
+
+        input[type="number"], input[type="text"], input[type="date"], select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--neutral-dark);
+            border-radius: var(--border-radius);
+            background-color: var(--neutral-light);
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        button.secondary {
+            background-color: var(--secondary-color);
+        }
+
+        button.secondary:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        /* Toggle switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--neutral-dark);
+            transition: var(--transition);
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Results area */
+        .results {
+            margin-top: 2rem;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-item {
+            background-color: var(--neutral-light);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Chart container */
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--neutral-dark);
+        }
+
+        th {
+            background-color: var(--neutral-mid);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: var(--neutral-mid);
+        }
+
+        /* Badge styles for credit score rating */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 700;
+            margin-left: 0.5rem;
+        }
+
+        .badge-excellent {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .badge-good {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .badge-fair {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .badge-poor {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        /* Slider styles */
+        .slider-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .slider-with-value {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider-with-value input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-value {
+            min-width: 3rem;
+            text-align: right;
+        }
+
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+        }
+
+        /* Responsive layout */
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 992px) {
+            .calculator-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Helper classes */
+        .hidden {
+            display: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-2 {
+            margin-top: 2rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 2rem;
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus styles for keyboard navigation */
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Financial Calculators</h1>
+            <p>Plan your loans and understand your credit score</p>
+        </header>
+
+        <div class="theme-toggle">
+            <label class="toggle-switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+                <span class="sr-only">Toggle dark mode</span>
+            </label>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" id="loan-tab" aria-selected="true" role="tab">Loan Calculator</button>
+            <button class="tab-button" id="credit-tab" aria-selected="false" role="tab">Credit Score Estimator</button>
+        </div>
+
+        <div class="calculator-content">
+            <!-- Loan Calculator -->
+            <div id="loan-calculator" role="tabpanel">
+                <div class="calculator-grid">
+                    <div class="card">
+                        <h2>Loan Calculator</h2>
+                        
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="calc-payments" name="calc-mode" value="payments" checked>
+                                <label for="calc-payments">Calculate Payments</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="calc-rate" name="calc-mode" value="rate">
+                                <label for="calc-rate">Estimate Interest Rate</label>
+                            </div>
+                        </div>
+
+                        <form id="loan-form">
+                            <div class="form-group">
+                                <label for="loan-amount">Loan Amount ($)</label>
+                                <input type="number" id="loan-amount" min="0" step="1000" value="300000" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="down-payment">Down Payment ($, optional)</label>
+                                <input type="number" id="down-payment" min="0" step="1000" value="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="loan-term">Loan Term</label>
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" id="term-years" name="term-unit" value="years" checked>
+                                        <label for="term-years">Years</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" id="term-months" name="term-unit" value="months">
+                                        <label for="term-months">Months</label>
+                                    </div>
+                                </div>
+                                <input type="number" id="loan-term" min="1" step="1" value="30" required>
+                            </div>
+
+                            <div class="form-group" id="interest-rate-group">
+                                <label for="interest-rate">Annual Interest Rate (%)</label>
+                                <input type="number" id="interest-rate" min="0" step="0.01" value="3.5" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="extra-payment">Extra Monthly Payment ($, optional)</label>
+                                <input type="number" id="extra-payment" min="0" step="10" value="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="start-date">Start Date (optional)</label>
+                                <input type="date" id="start-date">
+                            </div>
+
+                            <button type="submit" id="calculate-loan">Calculate</button>
+                            <button type="button" class="secondary" id="reset-loan">Reset</button>
+                        </form>
+
+                        <div class="mt-2">
+                            <h3>Quick Examples</h3>
+                            <div class="radio-group">
+                                <button type="button" class="secondary" data-example="30yr">30yr, $300k, 3.5%</button>
+                                <button type="button" class="secondary" data-example="15yr">15yr, $250k, 3.0%</button>
+                                <button type="button" class="secondary" data-example="car">Auto Loan: $30k, 5y, 4.5%</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="results" aria-live="polite">
+                            <h2>Loan Results</h2>
+                            
+                            <div class="result-grid">
+                                <div class="result-item">
+                                    <div class="result-value" id="monthly-payment">-</div>
+                                    <div class="result-label">Monthly Payment</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-value" id="total-paid">-</div>
+                                    <div class="result-label">Total Amount Paid</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-value" id="total-interest">-</div>
+                                    <div class="result-label">Total Interest Paid</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-value" id="apr">-</div>
+                                    <div class="result-label">APR</div>
+                                </div>
+                            </div>
+
+                            <div class="chart-container">
+                                <canvas id="loan-chart" aria-label="Loan balance over time chart"></canvas>
+                            </div>
+
+                            <h3>Amortization Schedule</h3>
+                            <div id="amortization-summary">
+                                <p>Complete schedule will appear here after calculation</p>
+                            </div>
+                            <button type="button" class="secondary" id="show-full-schedule">Show Full Schedule</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Credit Score Estimator -->
+            <div id="credit-calculator" class="hidden" role="tabpanel">
+                <div class="calculator-grid">
+                    <div class="card">
+                        <h2>Credit Score Estimator</h2>
+                        <p>Adjust the sliders to see how different factors affect your credit score.</p>
+                        
+                        <form id="credit-form">
+                            <div class="slider-container">
+                                <label for="payment-history">Payment History (% on-time payments)</label>
+                                <div class="slider-with-value">
+                                    <input type="range" id="payment-history" min="0" max="100" value="95" step="1">
+                                    <span class="slider-value" id="payment-history-value">95%</span>
+                                </div>
+                                <p class="tip">Tip: Always pay on time to maintain a good score.</p>
+                            </div>
+
+                            <div class="slider-container">
+                                <label for="credit-utilization">Credit Utilization (% of available credit used)</label>
+                                <div class="slider-with-value">
+                                    <input type="range" id="credit-utilization" min="0" max="100" value="30" step="1">
+                                    <span class="slider-value" id="credit-utilization-value">30%</span>
+                                </div>
+                                <p class="tip">Tip: Keep utilization below 30% for best results.</p>
+                            </div>
+
+                            <div class="slider-container">
+                                <label for="credit-history">Length of Credit History (years)</label>
+                                <div class="slider-with-value">
+                                    <input type="range" id="credit-history" min="0.1" max="50" value="7" step="0.1">
+                                    <span class="slider-value" id="credit-history-value">7 years</span>
+                                </div>
+                                <p class="tip">Tip: Don't close old accounts as they help your history length.</p>
+                            </div>
+
+                            <div class="slider-container">
+                                <label for="new-credit">New Credit Inquiries (last 12 months)</label>
+                                <div class="slider-with-value">
+                                    <input type="range" id="new-credit" min="0" max="20" value="2" step="1">
+                                    <span class="slider-value" id="new-credit-value">2</span>
+                                </div>
+                                <p class="tip">Tip: Limit new credit applications to avoid negative impacts.</p>
+                            </div>
+
+                            <div class="slider-container">
+                                <label for="credit-mix">Credit Mix (types of credit accounts)</label>
+                                <div class="slider-with-value">
+                                    <input type="range" id="credit-mix" min="0" max="6" value="3" step="1">
+                                    <span class="slider-value" id="credit-mix-value">3</span>
+                                </div>
+                                <p class="tip">Tip: A diverse mix (cards, loans, mortgage) can help your score.</p>
+                            </div>
+
+                            <button type="button" class="secondary" id="reset-credit">Reset</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <div class="results" aria-live="polite">
+                            <h2>Credit Score Estimate</h2>
+                            
+                            <div class="result-item mb-2">
+                                <div class="result-value" id="credit-score">-</div>
+                                <div class="result-label">Estimated Score <span id="score-rating" class="badge">-</span></div>
+                            </div>
+
+                            <h3>Score Breakdown</h3>
+                            <div class="result-grid">
+                                <div class="result-item">
+                                    <div class="result-value" id="ph-score">-</div>
+                                    <div class="result-label">Payment History (35%)</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-value" id="cu-score">-</div>
+                                    <div class="result-label">Credit Utilization (30%)</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-value" id="ch-score">-</div>
+                                    <div class="result-label">Credit History (15%)</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-value" id="nc-score">-</div>
+                                    <div class="result-label">New Credit (10%)</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="result-value" id="cm-score">-</div>
+                                    <div class="result-label">Credit Mix (10%)</div>
+                                </div>
+                            </div>
+
+                            <h3>Improvement Tips</h3>
+                            <div id="improvement-tips">
+                                <p>Your personalized tips will appear here.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =============================================================================
+        // DOM ELEMENTS
+        // =============================================================================
+        const themeToggle = document.getElementById('theme-toggle');
+        const loanTab = document.getElementById('loan-tab');
+        const creditTab = document.getElementById('credit-tab');
+        const loanCalculator = document.getElementById('loan-calculator');
+        const creditCalculator = document.getElementById('credit-calculator');
+        const calcModeRadios = document.querySelectorAll('input[name="calc-mode"]');
+        const interestRateGroup = document.getElementById('interest-rate-group');
+        const loanForm = document.getElementById('loan-form');
+        const creditForm = document.getElementById('credit-form');
+        const resetLoanBtn = document.getElementById('reset-loan');
+        const resetCreditBtn = document.getElementById('reset-credit');
+        const showFullScheduleBtn = document.getElementById('show-full-schedule');
+        
+        // Result elements
+        const monthlyPaymentEl = document.getElementById('monthly-payment');
+        const totalPaidEl = document.getElementById('total-paid');
+        const totalInterestEl = document.getElementById('total-interest');
+        const aprEl = document.getElementById('apr');
+        const loanChartEl = document.getElementById('loan-chart');
+        const amortizationSummaryEl = document.getElementById('amortization-summary');
+        
+        const creditScoreEl = document.getElementById('credit-score');
+        const scoreRatingEl = document.getElementById('score-rating');
+        const phScoreEl = document.getElementById('ph-score');
+        const cuScoreEl = document.getElementById('cu-score');
+        const chScoreEl = document.getElementById('ch-score');
+        const ncScoreEl = document.getElementById('nc-score');
+        const cmScoreEl = document.getElementById('cm-score');
+        const improvementTipsEl = document.getElementById('improvement-tips');
+        
+        // Slider value displays
+        const paymentHistoryValue = document.getElementById('payment-history-value');
+        const creditUtilizationValue = document.getElementById('credit-utilization-value');
+        const creditHistoryValue = document.getElementById('credit-history-value');
+        const newCreditValue = document.getElementById('new-credit-value');
+        const creditMixValue = document.getElementById('credit-mix-value');
+        
+        // Slider inputs
+        const paymentHistorySlider = document.getElementById('payment-history');
+        const creditUtilizationSlider = document.getElementById('credit-utilization');
+        const creditHistorySlider = document.getElementById('credit-history');
+        const newCreditSlider = document.getElementById('new-credit');
+        const creditMixSlider = document.getElementById('credit-mix');
+        
+        // Quick example buttons
+        const exampleButtons = document.querySelectorAll('[data-example]');
+
+        // =============================================================================
+        // INITIALIZATION
+        // =============================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up theme toggle
+            themeToggle.addEventListener('change', toggleTheme);
+            
+            // Set up tab navigation
+            loanTab.addEventListener('click', () => switchTab('loan'));
+            creditTab.addEventListener('click', () => switchTab('credit'));
+            
+            // Set up calculation mode toggles
+            calcModeRadios.forEach(radio => {
+                radio.addEventListener('change', toggleCalculationMode);
+            });
+            
+            // Set up form submissions
+            loanForm.addEventListener('submit', handleLoanCalculation);
+            creditForm.addEventListener('input', debounce(calculateCreditScore, 300));
+            
+            // Set up reset buttons
+            resetLoanBtn.addEventListener('click', resetLoanForm);
+            resetCreditBtn.addEventListener('click', resetCreditForm);
+            
+            // Set up full schedule button
+            showFullScheduleBtn.addEventListener('click', showFullAmortizationSchedule);
+            
+            // Set up quick examples
+            exampleButtons.forEach(button => {
+                button.addEventListener('click', () => loadExample(button.dataset.example));
+            });
+            
+            // Set up slider value displays
+            paymentHistorySlider.addEventListener('input', updateSliderValueDisplay);
+            creditUtilizationSlider.addEventListener('input', updateSliderValueDisplay);
+            creditHistorySlider.addEventListener('input', updateSliderValueDisplay);
+            newCreditSlider.addEventListener('input', updateSliderValueDisplay);
+            creditMixSlider.addEventListener('input', updateSliderValueDisplay);
+            
+            // Initialize slider value displays
+            updateSliderValueDisplay();
+            
+            // Calculate initial credit score
+            calculateCreditScore();
+            
+            // Set today's date as default for loan start date
+            document.getElementById('start-date').valueAsDate = new Date();
+        });
+
+        // =============================================================================
+        // THEME MANAGEMENT
+        // =============================================================================
+        function toggleTheme() {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        }
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.body.setAttribute('data-theme', savedTheme);
+            themeToggle.checked = savedTheme === 'dark';
+        }
+
+        // =============================================================================
+        // TAB MANAGEMENT
+        // =============================================================================
+        function switchTab(tabName) {
+            if (tabName === 'loan') {
+                loanTab.classList.add('active');
+                loanTab.setAttribute('aria-selected', 'true');
+                creditTab.classList.remove('active');
+                creditTab.setAttribute('aria-selected', 'false');
+                loanCalculator.classList.remove('hidden');
+                creditCalculator.classList.add('hidden');
+            } else {
+                creditTab.classList.add('active');
+                creditTab.setAttribute('aria-selected', 'true');
+                loanTab.classList.remove('active');
+                loanTab.setAttribute('aria-selected', 'false');
+                creditCalculator.classList.remove('hidden');
+                loanCalculator.classList.add('hidden');
+            }
+        }
+
+        // =============================================================================
+        // CALCULATION MODE TOGGLE
+        // =============================================================================
+        function toggleCalculationMode() {
+            const mode = document.querySelector('input[name="calc-mode"]:checked').value;
+            if (mode === 'rate') {
+                interestRateGroup.classList.add('hidden');
+            } else {
+                interestRateGroup.classList.remove('hidden');
+            }
+        }
+
+        // =============================================================================
+        // SLIDER VALUE DISPLAY UPDATE
+        // =============================================================================
+        function updateSliderValueDisplay() {
+            paymentHistoryValue.textContent = `${paymentHistorySlider.value}%`;
+            creditUtilizationValue.textContent = `${creditUtilizationSlider.value}%`;
+            creditHistoryValue.textContent = `${creditHistorySlider.value} years`;
+            newCreditValue.textContent = newCreditSlider.value;
+            creditMixValue.textContent = creditMixSlider.value;
+        }
+
+        // =============================================================================
+        // LOAN CALCULATION FUNCTIONS
+        // =============================================================================
+
+        /**
+         * Calculate monthly payment using the formula:
+         * M = P * r * (1 + r)^n / ((1 + r)^n - 1)
+         * Where:
+         * M = monthly payment
+         * P = principal loan amount
+         * r = monthly interest rate (annual rate / 12)
+         * n = total number of payments (loan term in months)
+         */
+        function calculateMonthlyPayment(principal, annualInterestRate, months) {
+            if (annualInterestRate === 0) {
+                return principal / months;
+            }
+            
+            const monthlyRate = annualInterestRate / 100 / 12;
+            return principal * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
+        }
+
+        /**
+         * Calculate total payment over the life of the loan
+         */
+        function calculateTotalPayment(monthlyPayment, months, extraPayment = 0) {
+            return (monthlyPayment + Number(extraPayment)) * months;
+        }
+
+        /**
+         * Calculate total interest paid over the life of the loan
+         */
+        function calculateTotalInterest(totalPayment, principal) {
+            return totalPayment - principal;
+        }
+
+        /**
+         * Generate an amortization schedule for the loan
+         */
+        function generateAmortizationSchedule(principal, annualInterestRate, months, extraPayment = 0, startDate = null) {
+            const monthlyRate = annualInterestRate / 100 / 12;
+            let balance = principal;
+            const schedule = [];
+            let currentDate = startDate ? new Date(startDate) : new Date();
+            
+            for (let i = 1; i <= months; i++) {
+                const interestPayment = balance * monthlyRate;
+                let principalPayment = calculateMonthlyPayment(principal, annualInterestRate, months) - interestPayment;
+                
+                // Apply extra payment to principal
+                principalPayment += Number(extraPayment);
+                
+                // Ensure we don't pay more than the remaining balance
+                if (principalPayment > balance) {
+                    principalPayment = balance;
+                }
+                
+                balance -= principalPayment;
+                
+                // Add to schedule
+                schedule.push({
+                    paymentNumber: i,
+                    date: new Date(currentDate),
+                    payment: calculateMonthlyPayment(principal, annualInterestRate, months) + Number(extraPayment),
+                    principal: principalPayment,
+                    interest: interestPayment,
+                    balance: balance < 0 ? 0 : balance
+                });
+                
+                // Move to next month
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                
+                // If balance is paid off, break out of the loop
+                if (balance <= 0) {
+                    break;
+                }
+            }
+            
+            return schedule;
+        }
+
+        /**
+         * Estimate interest rate using binary search algorithm
+         * This is used when the user provides principal, monthly payment, and term
+         */
+        function estimateInterestRate(principal, monthlyPayment, months) {
+            // Handle edge case where monthly payment is too small to pay off loan
+            if (monthlyPayment <= principal / months) {
+                return 0; // 0% interest or invalid scenario
+            }
+            
+            let low = 0;
+            let high = 100; // 100% APR as upper bound
+            let mid;
+            const tolerance = 1e-6; // Tolerance for convergence
+            const maxIterations = 100; // Prevent infinite loops
+            
+            for (let i = 0; i < maxIterations; i++) {
+                mid = (low + high) / 2;
+                const calculatedPayment = calculateMonthlyPayment(principal, mid, months);
+                
+                if (Math.abs(calculatedPayment - monthlyPayment) < tolerance) {
+                    return mid;
+                }
+                
+                if (calculatedPayment < monthlyPayment) {
+                    low = mid;
+                } else {
+                    high = mid;
+                }
+            }
+            
+            // Return the best estimate if we didn't converge exactly
+            return mid;
+        }
+
+        /**
+         * Format currency for display
+         */
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        /**
+         * Format percentage for display
+         */
+        function formatPercent(rate) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'percent',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(rate / 100);
+        }
+
+        /**
+         * Handle loan calculation form submission
+         */
+        function handleLoanCalculation(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const mode = document.querySelector('input[name="calc-mode"]:checked').value;
+            const loanAmount = parseFloat(document.getElementById('loan-amount').value);
+            const downPayment = parseFloat(document.getElementById('down-payment').value) || 0;
+            const termValue = parseFloat(document.getElementById('loan-term').value);
+            const termUnit = document.querySelector('input[name="term-unit"]:checked').value;
+            const interestRate = parseFloat(document.getElementById('interest-rate').value) || 0;
+            const extraPayment = parseFloat(document.getElementById('extra-payment').value) || 0;
+            const startDate = document.getElementById('start-date').value;
+            
+            // Calculate principal and term in months
+            const principal = loanAmount - downPayment;
+            const months = termUnit === 'years' ? termValue * 12 : termValue;
+            
+            let monthlyPayment, totalPayment, totalInterest, apr, schedule;
+            
+            if (mode === 'payments') {
+                // Calculate based on known interest rate
+                monthlyPayment = calculateMonthlyPayment(principal, interestRate, months);
+                totalPayment = calculateTotalPayment(monthlyPayment, months, extraPayment);
+                totalInterest = calculateTotalInterest(totalPayment, principal);
+                apr = interestRate;
+                schedule = generateAmortizationSchedule(principal, interestRate, months, extraPayment, startDate);
+            } else {
+                // Estimate interest rate based on desired payment
+                const targetMonthlyPayment = parseFloat(document.getElementById('interest-rate').value);
+                const estimatedRate = estimateInterestRate(principal, targetMonthlyPayment, months);
+                
+                monthlyPayment = targetMonthlyPayment;
+                totalPayment = calculateTotalPayment(monthlyPayment, months, extraPayment);
+                totalInterest = calculateTotalInterest(totalPayment, principal);
+                apr = estimatedRate;
+                schedule = generateAmortizationSchedule(principal, estimatedRate, months, extraPayment, startDate);
+            }
+            
+            // Update UI with results
+            monthlyPaymentEl.textContent = formatCurrency(monthlyPayment);
+            totalPaidEl.textContent = formatCurrency(totalPayment);
+            totalInterestEl.textContent = formatCurrency(totalInterest);
+            aprEl.textContent = formatPercent(apr);
+            
+            // Generate and display amortization schedule
+            displayAmortizationSchedule(schedule);
+            
+            // Draw chart
+            drawLoanChart(schedule);
+        }
+
+        /**
+         * Display amortization schedule in the UI
+         */
+        function displayAmortizationSchedule(schedule) {
+            if (schedule.length === 0) {
+                amortizationSummaryEl.innerHTML = '<p>No payment schedule to display.</p>';
+                return;
+            }
+            
+            // Show first 12 payments and last payment
+            const summaryPayments = schedule.slice(0, 12);
+            if (schedule.length > 12) {
+                summaryPayments.push(schedule[schedule.length - 1]);
+            }
+            
+            let html = `
+                <p>Total of ${schedule.length} payments</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Payment #</th>
+                                <th>Date</th>
+                                <th>Payment</th>
+                                <th>Principal</th>
+                                <th>Interest</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            summaryPayments.forEach(payment => {
+                html += `
+                    <tr>
+                        <td>${payment.paymentNumber}</td>
+                        <td>${payment.date.toLocaleDateString()}</td>
+                        <td>${formatCurrency(payment.payment)}</td>
+                        <td>${formatCurrency(payment.principal)}</td>
+                        <td>${formatCurrency(payment.interest)}</td>
+                        <td>${formatCurrency(payment.balance)}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            if (schedule.length > 12) {
+                html += `<p>... ${schedule.length - 13} payments not shown</p>`;
+            }
+            
+            amortizationSummaryEl.innerHTML = html;
+            
+            // Store full schedule for later display
+            amortizationSummaryEl.dataset.fullSchedule = JSON.stringify(schedule);
+        }
+
+        /**
+         * Show full amortization schedule
+         */
+        function showFullAmortizationSchedule() {
+            const fullScheduleJSON = amortizationSummaryEl.dataset.fullSchedule;
+            if (!fullScheduleJSON) return;
+            
+            const fullSchedule = JSON.parse(fullScheduleJSON);
+            
+            let html = `
+                <p>Complete amortization schedule (${fullSchedule.length} payments)</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Payment #</th>
+                                <th>Date</th>
+                                <th>Payment</th>
+                                <th>Principal</th>
+                                <th>Interest</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            fullSchedule.forEach(payment => {
+                html += `
+                    <tr>
+                        <td>${payment.paymentNumber}</td>
+                        <td>${payment.date.toLocaleDateString()}</td>
+                        <td>${formatCurrency(payment.payment)}</td>
+                        <td>${formatCurrency(payment.principal)}</td>
+                        <td>${formatCurrency(payment.interest)}</td>
+                        <td>${formatCurrency(payment.balance)}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            amortizationSummaryEl.innerHTML = html;
+            
+            // Change button to show summary
+            showFullScheduleBtn.textContent = 'Show Summary';
+            showFullScheduleBtn.removeEventListener('click', showFullAmortizationSchedule);
+            showFullScheduleBtn.addEventListener('click', showAmortizationSummary);
+        }
+
+        /**
+         * Show amortization summary (first 12 and last payment)
+         */
+        function showAmortizationSummary() {
+            const fullScheduleJSON = amortizationSummaryEl.dataset.fullSchedule;
+            if (!fullScheduleJSON) return;
+            
+            const fullSchedule = JSON.parse(fullScheduleJSON);
+            displayAmortizationSchedule(fullSchedule);
+            
+            // Change button to show full schedule
+            showFullScheduleBtn.textContent = 'Show Full Schedule';
+            showFullScheduleBtn.removeEventListener('click', showAmortizationSummary);
+            showFullScheduleBtn.addEventListener('click', showFullAmortizationSchedule);
+        }
+
+        /**
+         * Draw loan chart using canvas
+         */
+        function drawLoanChart(schedule) {
+            const ctx = loanChartEl.getContext('2d');
+            const width = loanChartEl.width = loanChartEl.offsetWidth;
+            const height = loanChartEl.height = loanChartEl.offsetHeight;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            if (schedule.length === 0) return;
+            
+            // Find max balance for scaling
+            const maxBalance = Math.max(...schedule.map(p => p.balance));
+            
+            // Set up chart area with padding
+            const padding = 40;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            // Draw axes
+            ctx.beginPath();
+            ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--text-color');
+            ctx.lineWidth = 1;
+            
+            // X-axis
+            ctx.moveTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            
+            // Y-axis
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            
+            ctx.stroke();
+            
+            // Draw axis labels
+            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-color');
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Payment Number', width / 2, height - 10);
+            
+            ctx.save();
+            ctx.translate(10, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText('Loan Balance ($)', 0, 0);
+            ctx.restore();
+            
+            // Draw data points
+            ctx.beginPath();
+            ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--primary-color');
+            ctx.lineWidth = 2;
+            
+            const xStep = chartWidth / (schedule.length - 1);
+            
+            for (let i = 0; i < schedule.length; i++) {
+                const x = padding + i * xStep;
+                const y = height - padding - (schedule[i].balance / maxBalance) * chartHeight;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+            
+            // Draw data points as circles
+            for (let i = 0; i < schedule.length; i += Math.floor(schedule.length / 10)) {
+                const x = padding + i * xStep;
+                const y = height - padding - (schedule[i].balance / maxBalance) * chartHeight;
+                
+                ctx.beginPath();
+                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary-color');
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // =============================================================================
+        // CREDIT SCORE CALCULATION FUNCTIONS
+        // =============================================================================
+
+        /**
+         * Calculate credit score based on inputs
+         * Uses FICO-like weighting:
+         * - Payment history: 35%
+         * - Credit utilization: 30%
+         * - Length of credit history: 15%
+         * - New credit: 10%
+         * - Credit mix: 10%
+         */
+        function calculateCreditScore() {
+            // Get input values
+            const paymentHistory = parseInt(paymentHistorySlider.value);
+            const creditUtilization = parseInt(creditUtilizationSlider.value);
+            const creditHistory = parseFloat(creditHistorySlider.value);
+            const newCredit = parseInt(newCreditSlider.value);
+            const creditMix = parseInt(creditMixSlider.value);
+            
+            // Calculate component scores (0-1 scale)
+            const phScore = calculatePaymentHistoryScore(paymentHistory);
+            const cuScore = calculateCreditUtilizationScore(creditUtilization);
+            const chScore = calculateCreditHistoryScore(creditHistory);
+            const ncScore = calculateNewCreditScore(newCredit);
+            const cmScore = calculateCreditMixScore(creditMix);
+            
+            // Apply weights
+            const weightedScore = 
+                phScore * 0.35 + 
+                cuScore * 0.30 + 
+                chScore * 0.15 + 
+                ncScore * 0.10 + 
+                cmScore * 0.10;
+            
+            // Scale to 300-850 range
+            const creditScore = Math.round(weightedScore * 550 + 300);
+            
+            // Update UI
+            creditScoreEl.textContent = creditScore;
+            phScoreEl.textContent = `${Math.round(phScore * 100)}%`;
+            cuScoreEl.textContent = `${Math.round(cuScore * 100)}%`;
+            chScoreEl.textContent = `${Math.round(chScore * 100)}%`;
+            ncScoreEl.textContent = `${Math.round(ncScore * 100)}%`;
+            cmScoreEl.textContent = `${Math.round(cmScore * 100)}%`;
+            
+            // Add rating badge
+            const rating = getCreditRating(creditScore);
+            scoreRatingEl.textContent = rating.text;
+            scoreRatingEl.className = `badge badge-${rating.class}`;
+            
+            // Show improvement tips
+            showImprovementTips({
+                paymentHistory,
+                creditUtilization,
+                creditHistory,
+                newCredit,
+                creditMix,
+                rating
+            });
+        }
+
+        /**
+         * Calculate payment history score (0-1)
+         * 100% on-time = 1.0, lower percentages get lower scores
+         */
+        function calculatePaymentHistoryScore(percentage) {
+            if (percentage >= 95) return 1.0;
+            if (percentage >= 90) return 0.9;
+            if (percentage >= 85) return 0.8;
+            if (percentage >= 80) return 0.7;
+            if (percentage >= 75) return 0.6;
+            if (percentage >= 70) return 0.5;
+            if (percentage >= 60) return 0.4;
+            if (percentage >= 50) return 0.3;
+            return 0.2;
+        }
+
+        /**
+         * Calculate credit utilization score (0-1)
+         * Lower utilization is better (<30% ideal)
+         */
+        function calculateCreditUtilizationScore(percentage) {
+            if (percentage <= 10) return 1.0;
+            if (percentage <= 20) return 0.9;
+            if (percentage <= 30) return 0.8;
+            if (percentage <= 40) return 0.7;
+            if (percentage <= 50) return 0.6;
+            if (percentage <= 60) return 0.5;
+            if (percentage <= 70) return 0.4;
+            if (percentage <= 80) return 0.3;
+            if (percentage <= 90) return 0.2;
+            return 0.1;
+        }
+
+        /**
+         * Calculate credit history length score (0-1)
+         * Longer history is better
+         */
+        function calculateCreditHistoryScore(years) {
+            if (years >= 20) return 1.0;
+            if (years >= 15) return 0.9;
+            if (years >= 10) return 0.8;
+            if (years >= 7) return 0.7;
+            if (years >= 5) return 0.6;
+            if (years >= 3) return 0.5;
+            if (years >= 2) return 0.4;
+            if (years >= 1) return 0.3;
+            return 0.2;
+        }
+
+        /**
+         * Calculate new credit score (0-1)
+         * Fewer inquiries are better
+         */
+        function calculateNewCreditScore(inquiries) {
+            if (inquiries === 0) return 1.0;
+            if (inquiries <= 1) return 0.9;
+            if (inquiries <= 2) return 0.8;
+            if (inquiries <= 3) return 0.7;
+            if (inquiries <= 4) return 0.6;
+            if (inquiries <= 5) return 0.5;
+            if (inquiries <= 7) return 0.4;
+            if (inquiries <= 10) return 0.3;
+            if (inquiries <= 15) return 0.2;
+            return 0.1;
+        }
+
+        /**
+         * Calculate credit mix score (0-1)
+         * More diverse credit types are better
+         */
+        function calculateCreditMixScore(mixCount) {
+            if (mixCount >= 5) return 1.0;
+            if (mixCount >= 4) return 0.8;
+            if (mixCount >= 3) return 0.6;
+            if (mixCount >= 2) return 0.4;
+            if (mixCount >= 1) return 0.2;
+            return 0.1;
+        }
+
+        /**
+         * Get credit rating based on score
+         */
+        function getCreditRating(score) {
+            if (score >= 800) return { text: 'Excellent', class: 'excellent' };
+            if (score >= 740) return { text: 'Very Good', class: 'excellent' };
+            if (score >= 670) return { text: 'Good', class: 'good' };
+            if (score >= 580) return { text: 'Fair', class: 'fair' };
+            return { text: 'Poor', class: 'poor' };
+        }
+
+        /**
+         * Show improvement tips based on current inputs
+         */
+        function showImprovementTips(inputs) {
+            let tips = '<ul>';
+            
+            // Payment history tips
+            if (inputs.paymentHistory < 100) {
+                tips += '<li>Make all payments on time. Set up autopay to avoid missing payments.</li>';
+            }
+            
+            // Credit utilization tips
+            if (inputs.creditUtilization > 30) {
+                tips += '<li>Pay down balances to keep utilization below 30%.</li>';
+                tips += '<li>Consider asking for credit limit increases (but don\'t use the extra capacity).</li>';
+            }
+            
+            // Credit history tips
+            if (inputs.creditHistory < 7) {
+                tips += '<li>Keep old accounts open to maintain history length.</li>';
+            }
+            
+            // New credit tips
+            if (inputs.newCredit > 2) {
+                tips += '<li>Avoid applying for new credit unless necessary.</li>';
+                tips += '<li>Space out credit applications over time.</li>';
+            }
+            
+            // Credit mix tips
+            if (inputs.creditMix < 3) {
+                tips += '<li>Consider diversifying your credit types over time (but don\'t open accounts you don\'t need).</li>';
+            }
+            
+            // General tips based on rating
+            if (inputs.rating.class === 'poor' || inputs.rating.class === 'fair') {
+                tips += '<li>Review your credit reports for errors and dispute any inaccuracies.</li>';
+                tips += '<li>Focus on paying down existing debt systematically.</li>';
+            }
+            
+            tips += '</ul>';
+            
+            improvementTipsEl.innerHTML = tips;
+        }
+
+        // =============================================================================
+        // UTILITY FUNCTIONS
+        // =============================================================================
+
+        /**
+         * Debounce function to limit how often a function can be called
+         */
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        /**
+         * Reset loan form to default values
+         */
+        function resetLoanForm() {
+            document.getElementById('loan-amount').value = '300000';
+            document.getElementById('down-payment').value = '0';
+            document.getElementById('loan-term').value = '30';
+            document.querySelector('input[name="term-unit"][value="years"]').checked = true;
+            document.getElementById('interest-rate').value = '3.5';
+            document.getElementById('extra-payment').value = '0';
+            document.getElementById('start-date').valueAsDate = new Date();
+            document.querySelector('input[name="calc-mode"][value="payments"]').checked = true;
+            interestRateGroup.classList.remove('hidden');
+            
+            // Clear results
+            monthlyPaymentEl.textContent = '-';
+            totalPaidEl.textContent = '-';
+            totalInterestEl.textContent = '-';
+            aprEl.textContent = '-';
+            amortizationSummaryEl.innerHTML = '<p>Complete schedule will appear here after calculation</p>';
+            
+            // Clear chart
+            const ctx = loanChartEl.getContext('2d');
+            ctx.clearRect(0, 0, loanChartEl.width, loanChartEl.height);
+        }
+
+        /**
+         * Reset credit form to default values
+         */
+        function resetCreditForm() {
+            paymentHistorySlider.value = '95';
+            creditUtilizationSlider.value = '30';
+            creditHistorySlider.value = '7';
+            newCreditSlider.value = '2';
+            creditMixSlider.value = '3';
+            updateSliderValueDisplay();
+            calculateCreditScore();
+        }
+
+        /**
+         * Load example data into loan form
+         */
+        function loadExample(exampleName) {
+            switch (exampleName) {
+                case '30yr':
+                    document.getElementById('loan-amount').value = '300000';
+                    document.getElementById('down-payment').value = '0';
+                    document.getElementById('loan-term').value = '30';
+                    document.querySelector('input[name="term-unit"][value="years"]').checked = true;
+                    document.getElementById('interest-rate').value = '3.5';
+                    document.getElementById('extra-payment').value = '0';
+                    break;
+                case '15yr':
+                    document.getElementById('loan-amount').value = '250000';
+                    document.getElementById('down-payment').value = '0';
+                    document.getElementById('loan-term').value = '15';
+                    document.querySelector('input[name="term-unit"][value="years"]').checked = true;
+                    document.getElementById('interest-rate').value = '3.0';
+                    document.getElementById('extra-payment').value = '0';
+                    break;
+                case 'car':
+                    document.getElementById('loan-amount').value = '30000';
+                    document.getElementById('down-payment').value = '0';
+                    document.getElementById('loan-term').value = '5';
+                    document.querySelector('input[name="term-unit"][value="years"]').checked = true;
+                    document.getElementById('interest-rate').value = '4.5';
+                    document.getElementById('extra-payment').value = '0';
+                    break;
+            }
+            
+            // Trigger calculation
+            handleLoanCalculation(new Event('submit'));
+        }
+
+        // =============================================================================
+        // TEST CASES AND SANITY CHECKS (commented out for production)
+        // =============================================================================
+        /*
+        // Test case 1: 30-year $300,000 loan at 3.5%
+        // Expected: Monthly payment ~$1,347.13, Total interest ~$185,966.80
+        const testPrincipal1 = 300000;
+        const testRate1 = 3.5;
+        const testTerm1 = 30 * 12;
+        const testPayment1 = calculateMonthlyPayment(testPrincipal1, testRate1, testTerm1);
+        console.log(`Test 1 - Monthly payment: $${testPayment1.toFixed(2)}`);
+        
+        // Test case 2: Interest rate estimation
+        // Using values from test case 1, we should get back ~3.5%
+        const estimatedRate1 = estimateInterestRate(testPrincipal1, testPayment1, testTerm1);
+        console.log(`Test 2 - Estimated rate: ${estimatedRate1.toFixed(4)}%`);
+        
+        // Test case 3: 15-year $250,000 loan at 3.0%
+        // Expected: Monthly payment ~$1,726.45, Total interest ~$60,761.00
+        const testPrincipal2 = 250000;
+        const testRate2 = 3.0;
+        const testTerm2 = 15 * 12;
+        const testPayment2 = calculateMonthlyPayment(testPrincipal2, testRate2, testTerm2);
+        console.log(`Test 3 - Monthly payment: $${testPayment2.toFixed(2)}`);
+        */
+    </script>
+</body>
+</html>
